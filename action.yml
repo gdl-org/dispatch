@@ -1,0 +1,36 @@
+name: "Trigger Workflow"
+description: "Trigger a `workflow_dispatch` workflow"
+
+inputs:
+  token:
+    description: GitHub token
+    required: true
+  owner:
+    description: Repository owner
+    required: false
+    default: "gdl-org"
+  repo:
+    description: Repository name
+    required: false
+    default: "docs"
+  workflow:
+    description: Workflow name
+    required: false
+    default: "pages"
+  ref:
+    description: Git ref (branch/tag)
+    required: false
+    default: "master"
+
+runs:
+  using: "composite"
+
+  steps:
+    - shell: bash
+      run: >
+        curl -L
+        -X POST
+        -H 'Accept: application/vnd.github+json'
+        -H 'Authorization: Bearer ${{ inputs.token }}'
+        'https://api.github.com/repos/${{ inputs.owner }}/${{ inputs.repo }}/actions/workflows/${{ inputs.workflow }}.yml/dispatches'
+        -d '{"ref":"${{ inputs.ref }}"}'
